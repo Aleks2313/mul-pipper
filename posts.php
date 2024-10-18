@@ -19,47 +19,61 @@ $options = [                                                    //detailed error
 
 try {
     // Create a new PDO instance (database connection)
-    $pdo = new PDO($dsn, $user, $pass, $options);
+    $pdo = new PDO($dsn, $user, $password, $options); // Use $password here
 } catch (\PDOException $e) {
     // Handle connection error
     throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
 
-// Handle POST request (for new posts)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
     $content = $_POST['content'];
+    $time = date('Y-m-d H:i:s'); // Set current time
+    $avatar = $_POST['avatar']; // This should be the avatar data (e.g., a file path or base64 encoded image)
 
     // Sanitize input data
     $username = htmlspecialchars($username);
     $content = htmlspecialchars($content);
+    // For avatar, make sure to handle it properly based on how you're sending it (e.g., file upload, base64, etc.)
 
     // Prepare SQL query to insert new post
-    $statement = $pdo->prepare("INSERT INTO pipper.posts VALUES(username, content) VALUES (?, ?)");
-    $statement->execute([$username, $content]);
+    $statement = $pdo->prepare("INSERT INTO posts (username, content, time, avatar) VALUES (?, ?, ?, ?)");
+    $statement->execute([$username, $content, $time, $avatar]);
 
-    echo 'Post added successfully';
+    // Return a success message as JSON
+    echo json_encode(['message' => 'Post added successfully']);
     exit();
 }
 
 // Handle GET request (fetch all posts)
 if ($_SERVER['REQUEST_METHOD'] == 'GET') {
     // Fetch all posts sorted by newest first
-    $stmt = $pdo->query("SELECT * FROM pipper.posts ORDER BY time DESC");
+    $stmt = $pdo->query("SELECT * FROM posts ORDER BY time DESC");
+    $posts = $stmt->fetchAll();
+
+    // Return posts as JSON
+    echo json_encode($posts);
+    exit();
+}
+
+// Handle GET request (fetch all posts)
+if ($_SERVER['REQUEST_METHOD'] == 'GET') {
+    // Fetch all posts sorted by newest first
+    $stmt = $pdo->query("SELECT * FROM posts ORDER BY time DESC");
     $posts = $stmt->fetchAll();
 
     // Display posts dynamically
-foreach ($posts as $post) {
-    echo "
-    <div class='post'>
-        <img src='avatar.png' class='avatar' alt='Avatar'>
-        <div>
-            <span class='username'>{$post['username']}</span>
-            <span class='time'>{$post['time']}</span>
-            <div class='content'>{$post['content']}</div>
+    foreach ($posts as $post) {
+        echo "
+        <div class='post'>
+            <img src='{$post['avatar']}' class='avatar' alt='Avatar'>
+            <div>
+                <span class='username'>{$post['username']}</span>
+                <span class='time'>{$post['time']}</span>
+                <div class='content'>{$post['content']}</div>
+            </div>
         </div>
-    </div>
-    ";
+        ";
     }
 }
 ?>

@@ -7,34 +7,15 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <!-- Left-side menu -->
-        <div class="menu">
-            <ul>
-                <li>Home</li>
-                <li>Messages</li>
-            </ul>
-        </div>
+    <form id="postForm" enctype="multipart/form-data">
+        <input type="text" id="username" placeholder="Username" required />
+        <textarea id="content" placeholder="Content" required></textarea>
+        <input type="file" id="avatar" required />
+        <button type="submit">Post</button>
+    </form>
 
-        <!-- Main content -->
-        <div class="main">
-            <!-- Post form -->
-            <div class="post-form">
-                <h2>Create a Post</h2>
-                <!-- Form for submitting posts via JavaScript -->
-                <form id="postForm">
-                    <input type="text" id="username" placeholder="Username" required><br>
-                    <textarea id="content" rows="4" placeholder="What's happening?" required></textarea><br>
-                    <button type="submit">Post</button>
-                </form>
-            </div>
+    <div id="posts"></div> <!-- This is the div where posts will be displayed -->
 
-            <!-- Posts display area -->
-            <div class="posts" id="posts"></div>
-        </div>
-    </div>
-
-    <!-- Link the JavaScript file -->
-    <script src="script.js"></script>
+    <script src="script.js"></script> <!-- Your JavaScript file -->
 </body>
 </html>

@@ -9,18 +9,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const username = document.getElementById('username').value;
         const content = document.getElementById('content').value;
+        const avatarFile = document.getElementById('avatar').files[0]; // Get avatar file
 
-        if (username && content) {
+        if (username && content && avatarFile) {
+            const formData = new FormData();
+            formData.append('username', username);
+            formData.append('content', content);
+            formData.append('avatar', avatarFile); // Append the file to FormData
+
             // Post the data using the Fetch API
             fetch('posts.php', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ username: username, content: content })
+                body: formData // Send FormData directly
             })
-            .then(response => response.text())
+            .then(response => response.json()) // Expecting a JSON response
             .then(data => {
+                console.log(data.message); // Log success message
                 // Clear the form after submission
                 form.reset();
                 // Fetch and refresh posts
@@ -41,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 data.forEach(post => {
                     const postElement = `
                         <div class="post">
-                            <img src="avatar.png" class="avatar" alt="Avatar">
+                            <img src="data:image/jpeg;base64,${post.avatar}" class="avatar" alt="Avatar"> <!-- Assuming you convert BLOB to base64 -->
                             <div>
                                 <span class="username">${post.username}</span>
                                 <span class="time">${post.time}</span>

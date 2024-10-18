@@ -1,1 +1,2 @@
-SELECT * FROM pipper.posts;
+INSERT INTO pipper.posts (username, content, time, avatar) VALUES
+(?, ?, ?, ?);
